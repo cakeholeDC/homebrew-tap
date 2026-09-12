@@ -1,0 +1,35 @@
+name: Homebrew
+
+on: pull_request
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  formula:
+    name: Formula (macOS)
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Prepare Homebrew
+        run: |
+          brew update
+          brew tap --custom-remote cakeholeDC/tap "$GITHUB_WORKSPACE"
+      - name: Style
+        run: brew style --formula cakeholeDC/tap/chromaticli
+      - name: Audit
+        env:
+          HOMEBREW_GITHUB_API_TOKEN: ${{ github.token }}
+        run: brew audit --strict --new --online cakeholeDC/tap/chromaticli
+      - name: Install from source
+        run: brew install --build-from-source cakeholeDC/tap/chromaticli
+      - name: Test
+        run: |
+          brew test cakeholeDC/tap/chromaticli
+          chromaticli --version
