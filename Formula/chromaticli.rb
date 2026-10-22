@@ -69,7 +69,9 @@ class Chromaticli < Formula
     assert_match "#{opt_libexec}/hook.fish", (testpath/".config/fish/conf.d/chromaticli.fish").read
     assert_equal vsix.to_s, (testpath/"code-state").read.strip
     refute_path_exists testpath/".local/bin/chromaticli"
-    refute_path_exists testpath/".config/chromaticli"
+    config_dir = testpath/".config/chromaticli"
+    assert_equal ["install-version.json"], config_dir.children.map { |path| path.basename.to_s }
+    assert_equal({ "schema" => 1, "version" => version.to_s }, JSON.parse((config_dir/"install-version.json").read))
 
     system bin/"chromaticli", "uninstall"
     assert_equal "# existing zsh configuration\n", (testpath/".zshrc").read
