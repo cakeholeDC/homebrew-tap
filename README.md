@@ -19,6 +19,8 @@ Restart your shell after installation.
 
 Remove shell integration before uninstalling the package:
 
+Keep VS Code's `code` CLI on `PATH` for this step.
+
 ```sh
 chromaticli uninstall
 brew uninstall cakeholeDC/tap/chromaticli
